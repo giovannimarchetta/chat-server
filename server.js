@@ -1,51 +1,33 @@
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
-const { Server } = require('socket.io');
+const port = process.env.PORT || 3000;
 
-const app = express();
-const server = http.createServer(app);
-
-const io = new Server(server, {
+const io = require("socket.io")(port, {
   cors: {
     origin: "http://frisiawards.altervista.org",
-    methods: ["GET", "POST"],
-    credentials: true
+    methods: ["GET", "POST"]
   }
-});
-
-// Middleware express (se un giorno servirà)
-app.use(cors({
-  origin: "http://frisiawards.altervista.org",
-  methods: ["GET", "POST"],
-  credentials: true
-}));
-
-app.get("/", (req, res) => {
-  res.send("Socket.IO server attivo ✅");
 });
 
 const users = {};
 
-io.on('connection', socket => {
-  socket.on('new-user', name => {
+console.log(`Socket.IO server running on port ${port}`);
+
+io.on("connection", socket => {
+  console.log(`Nuovo client connesso: ${socket.id}`);
+
+  socket.on("new-user", name => {
     users[socket.id] = name;
-    socket.broadcast.emit('user-connected', name);
+    console.log(`Utente connesso: ${name} (ID: ${socket.id})`);
+    socket.broadcast.emit("user-connected", name);
   });
 
-  socket.on('send-chat-message', message => {
-    socket.broadcast.emit('chat-message', { message, name: users[socket.id] });
+  socket.on("send-chat-message", message => {
+    console.log(`Messaggio ricevuto da ${users[socket.id]}: ${message}`);
+    socket.broadcast.emit("chat-message", { message, name: users[socket.id] });
   });
 
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('user-disconnected', users[socket.id]);
+  socket.on("disconnect", () => {
+    console.log(`Utente disconnesso: ${users[socket.id]} (ID: ${socket.id})`);
+    socket.broadcast.emit("user-disconnected", users[socket.id]);
     delete users[socket.id];
   });
-
-  console.log("Nuovo utente connesso");
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server in ascolto sulla porta ${PORT}`);
 });
