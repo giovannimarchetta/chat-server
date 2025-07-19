@@ -21,6 +21,10 @@ app.use(cors({
   credentials: true
 }));
 
+app.get("/", (req, res) => {
+  res.send("Socket.IO server attivo ✅");
+});
+
 const users = {};
 
 io.on('connection', socket => {
