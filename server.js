@@ -6,17 +6,20 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors({
-  origin: "http://frisiawards.altervista.org", // consenti il tuo frontend Altervista
-  methods: ["GET", "POST"]
-}));
-
 const io = new Server(server, {
   cors: {
     origin: "http://frisiawards.altervista.org",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
+
+// Middleware express (se un giorno servirà)
+app.use(cors({
+  origin: "http://frisiawards.altervista.org",
+  methods: ["GET", "POST"],
+  credentials: true
+}));
 
 const users = {};
 
@@ -27,7 +30,7 @@ io.on('connection', socket => {
   });
 
   socket.on('send-chat-message', message => {
-    socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] });
+    socket.broadcast.emit('chat-message', { message, name: users[socket.id] });
   });
 
   socket.on('disconnect', () => {
@@ -42,4 +45,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server in ascolto sulla porta ${PORT}`);
 });
-
