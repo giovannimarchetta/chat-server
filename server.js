@@ -2,7 +2,7 @@ const port = process.env.PORT || 3000;
 
 const io = require("socket.io")(port, {
   cors: {
-    origin: "http://frisiawards.altervista.org",
+    origin: "https://frisiawards.altervista.org",
     methods: ["GET", "POST"]
   }
 });
