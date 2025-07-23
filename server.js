@@ -10,7 +10,6 @@ const io = require("socket.io")(port, {
 const users = {};
 
 console.log(`Socket.IO server running on port ${port}`);
-console.log("Edited using VSC")
 
 io.on("connection", socket => {
 	console.log(`Nuovo client connesso: ${socket.id}`);
