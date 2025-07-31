@@ -10,6 +10,8 @@ const io = require("socket.io")(port, {
 	}
 });
 
+/* ➡️ Oggetto che tiene traccia degli utenti connessi.
+Usa socket.id come chiave, e il nome dell’utente come valore. */
 const users = {};
 
 console.log(`✅ Socket.IO server running on port ${port}`);
